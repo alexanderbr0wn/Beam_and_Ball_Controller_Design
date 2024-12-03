@@ -142,7 +142,7 @@ fprintf('ITAE: %.5f\n', ITAE);
 
 % visualize system simulation
 figure;
-% subplot(2, 1, 1);
+subplot(2, 1, 1);
 plot(time, x_hist(1, :), 'r', 'LineWidth', 1.5); hold on;
 plot(time, x_hist(3, :), 'b', 'LineWidth', 1.5);
 legend('Ball Position (x)', 'Beam Angle (\theta)');
@@ -151,8 +151,8 @@ ylabel('State Values');
 title('System States');
 grid on;
 
-figure;
-% subplot(2, 1, 2);
+% figure;
+subplot(2, 1, 2);
 plot(time, u_hist, 'k', 'LineWidth', 1.5);
 xlabel('Time (s)');
 ylabel('Control Input (u)');

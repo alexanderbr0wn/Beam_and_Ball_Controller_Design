@@ -254,6 +254,39 @@
     \end{figure}
 \end{frame}
 
+% Slide for 3D Model Simulation Results
+\begin{frame}{3D Model Simulation Results}
+    \centering
+    \begin{columns}[T] % Align columns at the top
+        \begin{column}{0.48\textwidth}
+            \includegraphics[width=0.9\textwidth]{Figures/control_input_scope.png}
+	    \captionof{figure}{Control input - simulation scope.}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \includegraphics[width=0.85\textwidth]{Figures/states_scope.png}
+	    \captionof{figure}{State trajectories -  simulation scope.}
+	    \begin{itemize}
+		\tiny
+                \item \textcolor{red}{Red:} \(x\) (Ball position)
+                \item \textcolor{blue}{Blue:} \(\dot{x}\) (Ball velocity)
+                \item \textcolor{orange}{Orange:} \(\theta\) (Beam angle)
+                \item \textcolor{green}{Green:} \(\dot{\theta}\) (Beam angular velocity)
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \begin{flushleft}
+    \textbf{\small Insights:}
+    \begin{itemize}
+	\footnotesize
+        \item The system stabilizes within 5 seconds with minimal oscillations.
+        \item The control input indicates energy efficiency.
+    \end{itemize}
+	\end{flushleft}
+\end{frame}
+
+
+
+
 % slide 9
 \begin{frame}{Challenges and Future Work}
     \textbf{Challenges:}
