@@ -1,0 +1,144 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cite}
+
+\begin{document}
+
+\title{Ball-and-Beam System: Modeling and Control Design}
+
+\author{
+    \IEEEauthorblockN{Alexander J. Brown}
+    \IEEEauthorblockA{Department of Electrical Engineering\\
+    University of Alabama in Huntsville\\
+    Email: ajb0083@uah.edu}
+}
+
+\maketitle
+
+\begin{abstract}
+This paper presents the modeling and control design of a ball-and-beam system, an inherently unstable system often used to demonstrate control theory concepts. The system is modeled using both Newtonian and Lagrangian mechanics, followed by the derivation of the state-space representation for control design. The system's stability and response are analyzed using a Linear Quadratic Regulator (LQR) controller.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Ball-and-Beam system, Lagrangian mechanics, Newtonian mechanics, State-space representation, Control design, LQR controller.
+\end{IEEEkeywords}
+
+\section{Introduction}
+The ball-and-beam system consists of a ball that can move along a beam, with the beam being rotated to control the position of the ball. The objective is to design a controller that stabilizes the ball at the center of the beam despite inherent instability. This system is a classic example of an inherently unstable system used to demonstrate key control theory concepts.
+
+The modeling of the system is derived using both **Newtonian mechanics** and **Lagrangian mechanics**, each providing insights into the system's dynamics. The derived equations are then converted into state-space form for the design of an optimal controller.
+
+\section{System Modeling Using Newtonian and Lagrangian Mechanics}
+
+\subsection{Newtonian Mechanics}
+In Newtonian mechanics, the equations of motion are derived using the basic principles of force and torque. The motion of the ball and the beam is governed by Newton's second law for translation (\(F = ma\)) and rotational dynamics (\(\tau = I \alpha\)).
+
+- **Ball's motion**: The force acting on the ball is the gravitational force along the beam, which causes the ball to move. The translational equation of motion is:
+  \[
+  F = m \ddot{x} = - m g \sin(\theta)
+  \]
+  where \(x\) is the position of the ball along the beam, \(m\) is the ball's mass, \(g\) is the gravitational acceleration, and \(\theta\) is the beam angle.
+
+- **Beam's motion**: The torque acting on the beam due to the ball's position generates an angular acceleration. The rotational equation of motion is:
+  \[
+  \tau = I \ddot{\theta} = - m g x \cos(\theta)
+  \]
+  where \(I\) is the moment of inertia of the beam, and \(x\) is the ball's position.
+
+Thus, using **Newtonian mechanics**, we derive the equations of motion for the ball and beam:
+\[
+\ddot{x} = - g \sin(\theta)
+\]
+\[
+\ddot{\theta} = - \frac{m g x \cos(\theta)}{I}
+\]
+
+\subsection{Lagrangian Mechanics}
+An alternative approach to modeling the system is through **Lagrangian mechanics**, which uses the system's **kinetic energy** (\(T\)) and **potential energy** (\(V\)) to derive the equations of motion.
+
+- **Kinetic Energy**: The total kinetic energy is the sum of the translational kinetic energy of the ball and the rotational kinetic energy of the beam:
+  \[
+  T = \frac{1}{2} m \dot{x}^2 + \frac{1}{2} I_{\text{beam}} \dot{\theta}^2
+  \]
+  where \(m\) is the mass of the ball, \(I_{\text{beam}}\) is the moment of inertia of the beam, and \(\dot{x}\) and \(\dot{\theta}\) are the velocities of the ball and beam, respectively.
+
+- **Potential Energy**: The potential energy comes from the gravitational force acting on the ball. The height of the ball depends on its position \(x\) and the angle \(\theta\):
+  \[
+  V = m g x \sin(\theta)
+  \]
+  where \(x\) is the position of the ball and \(\theta\) is the angle of the beam.
+
+The **Lagrangian** (\(\mathcal{L}\)) is the difference between the kinetic and potential energies:
+\[
+\mathcal{L} = T - V = \frac{1}{2} m \dot{x}^2 + \frac{1}{2} I_{\text{beam}} \dot{\theta}^2 - m g x \sin(\theta)
+\]
+
+\subsection{Equations of Motion Using Lagrangian Mechanics}
+To derive the equations of motion, we apply the **Euler-Lagrange equation**:
+\[
+\frac{d}{dt} \left( \frac{\partial \mathcal{L}}{\partial \dot{q}_i} \right) - \frac{\partial \mathcal{L}}{\partial q_i} = 0
+\]
+for each generalized coordinate \(q_i\), which in this case are \(x\) and \(\theta\).
+
+- For \(x\) (ball position), the equation becomes:
+  \[
+  m \ddot{x} = - m g \sin(\theta)
+  \]
+  Simplified:
+  \[
+  \ddot{x} = - g \sin(\theta)
+  \]
+
+- For \(\theta\) (beam angle), the equation becomes:
+  \[
+  I_{\text{beam}} \ddot{\theta} = - m g x \cos(\theta)
+  \]
+  Simplified:
+  \[
+  \ddot{\theta} = - \frac{m g x \cos(\theta)}{I_{\text{beam}}}
+  \]
+
+These equations describe the coupled dynamics of the ball and beam system.
+
+\subsection{State-Space Representation}
+To convert the system into state-space form, we define the state variables:
+\[
+x_1 = x, \quad x_2 = \dot{x}, \quad x_3 = \theta, \quad x_4 = \dot{\theta}
+\]
+The state vector is then:
+\[
+x = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \end{bmatrix}
+\]
+The system is represented in state-space form as:
+\[
+\dot{x} = A x + B u
+\]
+where \(u\) is the control input (torque applied to the beam). The system matrices \(A\) and \(B\) are given by:
+\[
+A = \begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & g/L & 0 \\
+0 & 0 & 0 & 1 \\
+0 & 0 & -m g r/I & 0
+\end{bmatrix}, \quad B = \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1/I \end{bmatrix}
+\]
+
+The state-space representation allows the system to be analyzed and controlled efficiently using modern control methods, such as **Linear Quadratic Regulator (LQR)**.
+
+\section{Control Design and Simulation}
+The next phase of this study involves the application of **Linear Quadratic Regulator (LQR)** control to stabilize the ball at the center of the beam. This control method minimizes a cost function that penalizes both state deviations and control effort, ensuring the system's stability and performance.
+
+\section{Conclusion}
+This paper has presented a comprehensive modeling approach for the ball-and-beam system using both **Newtonian** and **Lagrangian mechanics**. The derived equations of motion were converted into **state-space form**, facilitating the design of an optimal controller for system stabilization. Future work will involve extending this model to include disturbances and implementing more advanced control strategies.
+
+\section*{Acknowledgments}
+The authors would like to thank [Institution/Person] for their support in the development of this project.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
