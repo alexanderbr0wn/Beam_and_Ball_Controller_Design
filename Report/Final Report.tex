@@ -30,20 +30,20 @@ Ball-and-Beam system, Lagrangian mechanics, Newtonian mechanics, State-space rep
 \section{Introduction}
 The ball-and-beam system consists of a ball that can move along a beam, with the beam being rotated to control the position of the ball. The objective is to design a controller that stabilizes the ball at the center of the beam despite inherent instability. This system is a classic example of an inherently unstable system used to demonstrate key control theory concepts.
 
-The modeling of the system is derived using both **Newtonian mechanics** and **Lagrangian mechanics**, each providing insights into the system's dynamics. The derived equations are then converted into state-space form for the design of an optimal controller.
+The modeling of the system is derived using both Newtonian mechanics and Lagrangian mechanics, each providing insights into the system's dynamics. The derived equations are then converted into state-space form for the design of an optimal controller.
 
 \section{System Modeling Using Newtonian and Lagrangian Mechanics}
 
 \subsection{Newtonian Mechanics}
 In Newtonian mechanics, the equations of motion are derived using the basic principles of force and torque. The motion of the ball and the beam is governed by Newton's second law for translation (\(F = ma\)) and rotational dynamics (\(\tau = I \alpha\)).
 
-- **Ball's motion**: The force acting on the ball is the gravitational force along the beam, which causes the ball to move. The translational equation of motion is:
+- Ball's motion: The force acting on the ball is the gravitational force along the beam, which causes the ball to move. The translational equation of motion is:
   \[
   F = m \ddot{x} = - m g \sin(\theta)
   \]
   where \(x\) is the position of the ball along the beam, \(m\) is the ball's mass, \(g\) is the gravitational acceleration, and \(\theta\) is the beam angle.
 
-- **Beam's motion**: The torque acting on the beam due to the ball's position generates an angular acceleration. The rotational equation of motion is:
+- Beam's motion: The torque acting on the beam due to the ball's position generates an angular acceleration. The rotational equation of motion is:
   \[
   \tau = I \ddot{\theta} = - m g x \cos(\theta)
   \]
@@ -140,5 +140,10 @@ The authors would like to thank [Institution/Person] for their support in the de
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
+
+\begin{thebibliography}{1}
+\bibitem{ref1} C. G. Bolívar-Vincenty and G. Beauchamp-Báez, "Modeling the Ball-and-Beam System," LACCEI’2014.
+\bibitem{ref2} Quanser, "Ball and Beam System Documentation," 2014.
+\end{thebibliography}
 
 \end{document}
