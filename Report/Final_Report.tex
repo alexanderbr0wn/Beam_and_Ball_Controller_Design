@@ -56,7 +56,7 @@ This paper aims to provide a comprehensive modeling and control design for the b
 \label{subsec:intro_lit_review}
 The modeling and control of ball-and-beam systems have been widely studied, with Bolívar and Beauchamp \cite{bolivar2014} comparing Newtonian and Lagrangian mechanics to ensure accurate nonlinear simulations. Their work provides a dual perspective on system dynamics and underpins further optimization efforts. 
 
-State feedback methods, such as pole placement and Linear Quadratic Regulator (LQR), are commonly used. Norlander \cite{norlaner2003} introduced a framework for parameterizing pole placement gains, highlighting flexibility in achieving control objectives. Umar et al. \cite{umar2022} demonstrated the LQR controller's effectiveness in balancing performance and energy efficiency on a Ball-on-Sphere system, emphasizing the role of weighting matrices.
+State feedback methods, such as pole placement and LQR, are commonly used. Norlander \cite{norlaner2003} introduced a framework for parameterizing pole placement gains, highlighting flexibility in achieving control objectives. Umar et al. \cite{umar2022} demonstrated the LQR controller's effectiveness in balancing performance and energy efficiency on a Ball-on-Sphere system, emphasizing the role of weighting matrices.
 
 Building on these studies, this work incorporates rigorous modeling and optimal control to stabilize the ball-and-beam system.
 
@@ -194,11 +194,11 @@ Newtonian mechanics provides a direct, force-based derivation of the system dyna
 
 \section{Controller Design}
 \label{sec:control_design}
-The ball-and-beam system is inherently unstable, requiring a feedback controller to stabilize the ball's position and regulate the beam's response. Two control strategies were implemented and evaluated during this project: pole placement via Ackermann's formula and a Linear Quadratic Regulator (LQR). Both controllers were tested simultaneously, with the gains \(K_{\text{acker}}\) and \(K_{\text{lqr}}\) applied to the pole placement and LQR models, respectively. This dual implementation enabled a direct performance comparison.
+The ball-and-beam system is inherently unstable, requiring a feedback controller to stabilize the ball's position and regulate the beam's response. Two control strategies were implemented and evaluated during this project: pole placement via Ackermann's formula and a LQR. Both controllers were tested simultaneously, with the gains \(K_{\text{acker}}\) and \(K_{\text{lqr}}\) applied to the pole placement and LQR models, respectively. This dual implementation enabled a direct performance comparison.
 
 \subsection{Linear Quadratic Regulator Design}
 \label{subsec:lqr_design}
-The Linear Quadratic Regulator (LQR) method is an optimal control strategy designed to balance system performance and control effort. The LQR controller minimizes the cost function:
+The LQR method is an optimal control strategy designed to balance system performance and control effort. The LQR controller minimizes the cost function:
 
 \begin{equation}
     J = \int_{0}^{\infty} (\mathbf{x}^\top Q \mathbf{x} + u^\top R u) \, dt,
@@ -210,7 +210,11 @@ The LQR gain \(K_{\text{lqr}}\) was computed using these parameters, providing a
 
 \subsection{Pole Placement via Ackermann's Formula}
 \label{subsec:control_pp_v_acker}
-Pole placement is a control technique used to place the closed-loop poles of a system at desired locations to ensure stability and achieve specific dynamic performance. In this study, the desired poles \([-158, -2+3i, -2-3i, -3.5]\) were determined by backsolving from the \(K\)-matrix of the LQR controller.
+Pole placement is a control technique used to place the closed-loop poles of a system at desired locations to ensure stability and achieve specific dynamic performance. In this study, the desired poles 
+\[
+[-158, -2+3i, -2-3i, -3.5]
+\]
+were determined by backsolving from the \(K\)-matrix of the LQR controller.
 
 Starting with the closed-loop dynamics of the LQR controller:
 \[
@@ -229,12 +233,9 @@ where \(\texttt{acker}\) is MATLAB's built-in function for implementing Ackerman
 
 Simulations confirmed that the feedback gain \(K_{\text{acker}}\) achieved effective stabilization with performance closely matching that of the LQR controller, while avoiding the challenges associated with manually selecting poles.
 
-
-% Simulations confirmed that the LQR controller provided smoother transient responses with reduced oscillations compared to the pole placement method. This was achieved through the inherent optimality of the LQR design, which balances performance metrics using the specified weighting matrices.
-
 \subsection{Performance Evaluation}
 \label{subsec:control_performance}
-The performance of both controllers, Pole Placement (via Ackermann's formula) and Linear Quadratic Regulator (LQR), was evaluated using three standard performance metrics:
+The performance of both controllers, Pole Placement and LQR, was evaluated using three standard performance metrics:
 
 \begin{itemize}
     \item \textbf{Integral of Absolute Error (IAE):} Measures the total accumulated error over time, providing an indication of overall deviation from the reference trajectory.
@@ -257,16 +258,8 @@ LQR                 & 0.13314        & 0.01975        & 0.05626        \\ \hline
 \end{table}
 
 \subsubsection{Comparison and Analysis}
-The performance comparison reveals that both controllers achieve similar levels of stability and control precision, but with slight differences in how the error is distributed over time and penalized:
+The performance comparison reveals that both controllers achieve similar levels of stability and control precision, but with slight differences in how the error is distributed over time and penalized. Both controllers exhibit very close IAE values, indicating comparable overall error accumulation. However, the slightly lower IAE for the Pole Placement controller suggests better error tracking over the simulation duration. In terms of ISE, the Pole Placement controller achieves a marginally lower value than the LQR controller, implying its effectiveness in managing larger deviations more efficiently, likely due to its higher gain values near the system poles. Conversely, the LQR controller demonstrates a slight advantage in the TAE, reflecting its ability to minimize errors during the later stages of the simulation. This characteristic is particularly advantageous for systems requiring smooth settling behavior and minimal steady-state deviations.
 
-\begin{itemize}
-    \item \textbf{IAE Comparison:}
-    Both controllers exhibit very close IAE values, indicating comparable overall error accumulation. The slightly lower IAE for Pole Placement suggesting better error tracking over the simulation duration.
-    \item \textbf{ISE Comparison:}
-    The Pole Placement controller achieves a marginally lower ISE compared to the LQR controller. This suggests that the Pole Placement controller manages larger deviations more effectively, likely due to its higher gain values near the system poles.
-    \item \textbf{ITAE Comparison:}
-    The LQR controller achieves a slightly better ITAE, indicating its ability to reduce errors during the later stages of the simulation. This is beneficial for systems requiring smooth settling behavior and minimal steady-state deviations.
-\end{itemize}
 
 \subsubsection{Discussion}
 Although both controllers perform well under the given system parameters, the LQR controller demonstrates superior behavior in minimizing late-stage errors (as evidenced by the ITAE metric). This is particularly important for applications requiring precision and smooth convergence to a steady state. The Pole Placement controller, while effective, tends to exhibit slightly larger transient responses due to its tuning near desired pole locations.
@@ -278,7 +271,7 @@ Overall, the LQR controller is better suited for scenarios prioritizing precisio
 \section{3D Simulation and Simulink Model}
 \label{sec:simulation_model}
 
-To evaluate the performance of the proposed control strategies, a combination of MATLAB simulations, Simulink models, and a 3D visualization environment were developed. These tools enabled a comprehensive analysis of the ball-and-beam system's dynamics under both the Linear Quadratic Regulator (LQR) and pole placement control strategies. The Simulink models used identical configurations, differing only in the control gain matrix (\(K\)) applied for each controller. MATLAB scripts were employed for direct visualization and calculation of performance metrics.
+To evaluate the performance of the proposed control strategies, a combination of MATLAB simulations, Simulink models, and a 3D visualization environment were developed. These tools enabled a comprehensive analysis of the ball-and-beam system's dynamics under both the LQR and pole placement control strategies. The Simulink models used identical configurations, differing only in the control gain matrix (\(K\)) applied for each controller. MATLAB scripts were employed for direct visualization and calculation of performance metrics.
 
 \subsection{Simulink Model}
 \label{subsec:simulink_model}
@@ -306,22 +299,6 @@ The outputs from the Simulink model were extracted for comparative analysis, foc
 \label{subsec:matlab_simulation}
 
 MATLAB simulations were performed to complement the Simulink model by providing detailed performance metrics and visual comparisons. Both controllers were tested under identical initial conditions (\(x_0 = [-0.2; 0; 0; 0]\)) for fairness.
-
-\subsubsection{Performance Metrics}
-
-Performance metrics such as the Integral of Absolute Error (IAE), Integral of Squared Error (ISE), and Integral of Time-weighted Absolute Error (ITAE) were calculated to quantify the controllers' effectiveness. The results are summarized in Table~\ref{tab:performance_metrics}.
-
-\begin{table}[H]
-\caption{Performance Metrics for Pole Placement and LQR Controllers}
-\label{tab:performance_metrics}
-\centering
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{Controller} & \textbf{IAE} & \textbf{ISE} & \textbf{ITAE} \\ \hline
-\textbf{Pole Placement (\(K_{\text{acker}}\))} & 0.13262 & 0.01937 & 0.05834 \\ \hline
-\textbf{LQR (\(K_{\text{lqr}}\))}             & 0.13314 & 0.01975 & 0.05626 \\ \hline
-\end{tabular}
-\end{table}
 
 \subsubsection{State Variable Responses}
 Figure~\ref{fig:state_sim} shows the time evolution of the state variables \(x\) (ball position), \(\dot{x}\) (ball velocity), \(\theta\) (beam angle), and \(\dot{\theta}\) (beam angular velocity). 
@@ -382,7 +359,7 @@ The 3D visualization validates these findings by offering a dynamic representati
 
 This study presented a comprehensive approach to modeling and controlling a ball-and-beam system, a classic example of an inherently unstable system in control theory. Using both Newtonian and Lagrangian mechanics, the system dynamics were derived to provide complementary perspectives on its behavior. These equations of motion were subsequently linearized and expressed in state-space form, establishing a foundation for the implementation of modern control techniques.
 
-Two control strategies were investigated: pole placement via Ackermann’s formula and the Linear Quadratic Regulator (LQR). While the pole placement method achieved stabilization, it exhibited significant transient oscillations, which may limit its practicality in real-world applications. The LQR controller, on the other hand, provided a more systematic and robust framework, minimizing oscillations and achieving a balance between stability, performance, and control effort.
+Two control strategies were investigated: pole placement via Ackermann’s formula and the LQR. While the pole placement method achieved stabilization, it exhibited significant transient oscillations, which may limit its practicality in real-world applications. The LQR controller, on the other hand, provided a more systematic and robust framework, minimizing oscillations and achieving a balance between stability, performance, and control effort.
 
 The control strategies were validated through MATLAB simulations, performance metrics such as IAE, ISE, and ITAE, and a 3D simulation environment. The results demonstrated that the LQR controller outperformed pole placement in terms of smoothness, energy efficiency, and overall precision. Real-time 3D simulations further reinforced these findings by illustrating the superior transient and steady-state behavior of the LQR controller under various initial conditions.
 
