@@ -77,19 +77,19 @@ C = eye(4);
 D = 0;
 
 % LQR weights
-Q = diag([200, 10, 10, 10]);
-R = 1;
+Q = diag([100, 10, 10, 1]);
+R = 0.25;
 
-% desired_poles = [-2, -3, -4, -5];
-% K = acker(A, B, desired_poles);
+desired_poles = [-120, -1.5+5i, -1.5-5i, -3.5];
+K_acker = acker(A, B, desired_poles);
 
 % gain calculation
-K = lqr(A, B, Q, R);
+K_lqr = lqr(A, B, Q, R);
 Ki = 1;
 
 % Simulation Parameters
 T = 10;
-x0 = [0.1; 0; 0; 0];
+x0 = [-0.2; 0; 0; 0];
 x_ref = [0; 0; 0; 0];
 
 % system
@@ -102,7 +102,7 @@ error_hist = []; % error history
 
 for t = time
     e = x_ref - x;
-    u = -K*x;
+    u = -K_acker*x;
     u_hist = [u_hist, u];
     x_hist = [x_hist, x];
     error_hist = [error_hist, e];
@@ -118,27 +118,12 @@ IAE = trapz(time, abs(e_pos));
 ISE = trapz(time, e_pos.^2);
 ITAE = trapz(time, time .* abs(e_pos));
 
-% % settling time
-% tolerance = 0.02;
-% x_final = x_hist(1, end);
-% settling_indices = find(abs(x_hist(1, :) - x_final) ...
-%     > tolerance*abs(x_final));
-% if isempty(settling_indices)
-%     settling_time = 0;
-% else
-%     settling_time = time(settling_indices(end));
-% end
-% 
-% % percent overshoot
-% x_max = max(x_hist(1, :));
-% percent_overshoot = ((x_max - x_final) / abs(x_final))*100;
-
 fprintf('Cost Analysis Results:\n');
 fprintf('IAE: %.5f\n', IAE);
 fprintf('ISE: %.5f\n', ISE);
 fprintf('ITAE: %.5f\n', ITAE);
-% fprintf('Settling Time: %.2f seconds\n', settling_time);
-% fprintf('Percent Overshoot: %.2f%%\n', percent_overshoot);
+fprintf('Settling Time: %.2f seconds\n', settling_time);
+fprintf('Percent Overshoot: %.2f%%\n', percent_overshoot);
 
 % visualize system simulation
 figure;
