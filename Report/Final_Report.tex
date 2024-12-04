@@ -192,27 +192,45 @@ This state-space representation enables the application of modern control method
 \label{subsec:model_comparison}
 Newtonian mechanics provides a direct, force-based derivation of the system dynamics, making it suitable for translating equations into state-space form. In contrast, Lagrangian mechanics offers a more compact and systematic energy-based approach, particularly useful for systems with complex coupling.
 
-\section{Control Design}
+\section{Controller Design}
 \label{sec:control_design}
 The ball-and-beam system is inherently unstable, requiring a feedback controller to stabilize the ball's position and regulate the beam's response. Two control strategies were implemented and evaluated during this project: pole placement via Ackermann's formula and a Linear Quadratic Regulator (LQR). Both controllers were tested simultaneously, with the gains \(K_{\text{acker}}\) and \(K_{\text{lqr}}\) applied to the pole placement and LQR models, respectively. This dual implementation enabled a direct performance comparison.
 
-\subsection{Pole Placement via Ackermann's Formula}
-\label{subsec:control_pp_v_acker}
-Pole placement is a classical control technique in which the feedback gain matrix \(\mathbf{K}\) is computed to place the closed-loop poles at desired locations, ensuring stability and dynamic performance. For the ball-and-beam system, the desired poles \([-120, -1.5+5i, -1.5-5i, -3.5]\) were selected to achieve a balance between response speed, damping, and overshoot minimization. The Ackermann's formula was used to compute \(K_{\text{acker}}\), with system matrices \(\mathbf{A}\) and \(\mathbf{B}\) as defined in Section \ref{subsec:model_ss}.
-
-Simulations revealed that the pole placement method achieved stabilization but exhibited noticeable oscillations during transient phases. These oscillations could be attributed to the chosen pole locations, which may not provide optimal damping for the coupled dynamics of the ball and beam. While the controller was functional, further tuning of the pole locations would be required to reduce oscillations for real-world implementations.
-
 \subsection{Linear Quadratic Regulator Design}
 \label{subsec:lqr_design}
-The Linear Quadratic Regulator (LQR) method is a widely used optimal control strategy due to its ability to balance performance and energy efficiency. The LQR controller minimizes a quadratic cost function, which balances state deviations and control effort:
+The Linear Quadratic Regulator (LQR) method is an optimal control strategy designed to balance system performance and control effort. The LQR controller minimizes the cost function:
 
 \begin{equation}
     J = \int_{0}^{\infty} (\mathbf{x}^\top Q \mathbf{x} + u^\top R u) \, dt,
 \end{equation}
 
-where \( Q \) is the state weighting matrix, \( R \) is the control weighting matrix, and \( \mathbf{x} \) represents the state vector. For this implementation, the weighting matrices were tuned as \( Q = \text{diag}(100, 10, 10, 1) \) and \( R = 0.25 \), emphasizing stabilization of the ball position while minimizing control effort. The LQR gain \(K_{\text{lqr}}\) was computed and applied alongside \(K_{\text{acker}}\) for simultaneous evaluation.
+where \(Q\) and \(R\) are the state and control weighting matrices, respectively. For this study, the weighting matrices were set as \( Q = \text{diag}(200, 10, 10, 10) \) and \( R = 1 \). The higher weight on \(x\) (200) prioritizes rapid stabilization of the ball's position, while the weights on \(\dot{x}\), \(\theta\), and \(\dot{\theta}\) (10 each) ensure smooth transitions and prevent excessive oscillations. The control effort weight \(R = 1\) was chosen to balance energy efficiency and transient response speed.
 
-Simulations confirmed that the LQR controller provided smoother transient responses with reduced oscillations compared to the pole placement method. This was achieved through the inherent optimality of the LQR design, which balances performance metrics using the specified weighting matrices.
+The LQR gain \(K_{\text{lqr}}\) was computed using these parameters, providing a smooth transient response with minimal oscillations. Compared to the pole placement design, the LQR approach demonstrated superior performance in stabilizing the system while minimizing control effort.
+
+\subsection{Pole Placement via Ackermann's Formula}
+\label{subsec:control_pp_v_acker}
+Pole placement is a control technique used to place the closed-loop poles of a system at desired locations to ensure stability and achieve specific dynamic performance. In this study, the desired poles \([-158, -2+3i, -2-3i, -3.5]\) were determined by backsolving from the \(K\)-matrix of the LQR controller.
+
+Starting with the closed-loop dynamics of the LQR controller:
+\[
+\dot{\mathbf{x}} = (\mathbf{A} - \mathbf{B} K_{\text{lqr}}) \mathbf{x},
+\]
+the eigenvalues of the matrix \((\mathbf{A} - \mathbf{B} K_{\text{lqr}})\) were computed to obtain the desired poles:
+\[
+\text{Desired Poles} = \text{eig}(\mathbf{A} - \mathbf{B} K_{\text{lqr}}).
+\]
+
+These poles were then used in MATLAB to compute the feedback gain \(K_{\text{acker}}\) using Ackermann’s formula:
+\[
+K_{\text{acker}} = \texttt{acker}(\mathbf{A}, \mathbf{B}, \text{Desired Poles}),
+\]
+where \(\texttt{acker}\) is MATLAB's built-in function for implementing Ackermann’s formula. This systematic approach ensured that the pole placement controller mimicked the stability and dynamic response characteristics of the LQR controller.
+
+Simulations confirmed that the feedback gain \(K_{\text{acker}}\) achieved effective stabilization with performance closely matching that of the LQR controller, while avoiding the challenges associated with manually selecting poles.
+
+
+% Simulations confirmed that the LQR controller provided smoother transient responses with reduced oscillations compared to the pole placement method. This was achieved through the inherent optimality of the LQR design, which balances performance metrics using the specified weighting matrices.
 
 \subsection{Performance Evaluation}
 \label{subsec:control_performance}
@@ -369,6 +387,9 @@ Two control strategies were investigated: pole placement via Ackermann’s formu
 The control strategies were validated through MATLAB simulations, performance metrics such as IAE, ISE, and ITAE, and a 3D simulation environment. The results demonstrated that the LQR controller outperformed pole placement in terms of smoothness, energy efficiency, and overall precision. Real-time 3D simulations further reinforced these findings by illustrating the superior transient and steady-state behavior of the LQR controller under various initial conditions.
 
 This work underscores the importance of iterative refinement in control design and highlights the effectiveness of advanced control techniques like LQR for stabilizing complex, real-world systems. Future research could explore adaptive or nonlinear control strategies to improve robustness and performance under varying system dynamics or external disturbances. Additionally, hardware implementation of the control strategies would provide further insights into their practical applicability.
+
+\section*{Acknowledgment}
+The author extends special thanks to Jonathan Shreve and Garret Smith. Their innovative backsolving approach was crucial in successfully implementing a pole placement controller, enabling direct comparison with the LQR strategy.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
