@@ -59,102 +59,104 @@
 clear, close all, clc;
 
 %% System Parameters
-% beam
-L = 1.0;
-w = 0.05;
-h = 0.1;
+% Beam
+L = 1.0; w = 0.05; h = 0.1;
 
-% ball
-m = 0.5;
-r = 0.05;
-g = 9.81;
-I = 0.02;
+% Ball
+m = 0.5; r = 0.05; g = 9.81; I = 0.02;
 
-% system matrices
+% System matrices
 A = [0 1 0 0; 0 0 g/L 0; 0 0 0 1; 0 0 -m*g*r/I 0];
 B = [0; 0; 0; 1/I];
-C = eye(4);
-D = 0;
+C = eye(4); D = 0;
 
+%% Controller Design
 % LQR weights
 Q = diag([200, 10, 10, 10]);
 R = 1;
 
-% desired_poles = [-2, -3, -4, -5];
-% K = acker(A, B, desired_poles);
+% Controller Gains
+desired_poles = [-158, -2+3i, -2-3i, -3.5];
+K_acker = acker(A, B, desired_poles);
+K_lqr = lqr(A, B, Q, R);
 
-% gain calculation
-K = lqr(A, B, Q, R);
-Ki = 1;
-
+%% Simulation
 % Simulation Parameters
-T = 10;
-x0 = [0.1; 0; 0; 0];
+T = 10; dt = 0.01;
+time = 0:dt:T;
+x0 = [-0.2; 0; 0; 0];
 x_ref = [0; 0; 0; 0];
 
-% system
-dt = 0.01; % step
-time = 0:dt:T;
-x = x0;
-u_hist = []; % control input history
-x_hist = []; % state history
-error_hist = []; % error history
+% Initialize histories
+x_hist_acker = [];
+u_hist_acker = [];
+x_hist_lqr = [];
+u_hist_lqr = [];
 
+% Simulate Pole Placement Controller
+x = x0;
 for t = time
     e = x_ref - x;
-    u = -K*x;
-    u_hist = [u_hist, u];
-    x_hist = [x_hist, x];
-    error_hist = [error_hist, e];
-    
-    % euler integration
-    dx = A*x + B*u;
-    x = x + dx*dt;
+    u = -K_acker * x;
+    u_hist_acker = [u_hist_acker, u];
+    x_hist_acker = [x_hist_acker, x];
+
+    % Euler integration
+    dx = A * x + B * u;
+    x = x + dx * dt;
 end
 
-% cost function calculations
-e_pos = error_hist(1, :);
-IAE = trapz(time, abs(e_pos));
-ISE = trapz(time, e_pos.^2);
-ITAE = trapz(time, time .* abs(e_pos));
+% Simulate LQR Controller
+x = x0;
+for t = time
+    e = x_ref - x;
+    u = -K_lqr * x;
+    u_hist_lqr = [u_hist_lqr, u];
+    x_hist_lqr = [x_hist_lqr, x];
 
-% % settling time
-% tolerance = 0.02;
-% x_final = x_hist(1, end);
-% settling_indices = find(abs(x_hist(1, :) - x_final) ...
-%     > tolerance*abs(x_final));
-% if isempty(settling_indices)
-%     settling_time = 0;
-% else
-%     settling_time = time(settling_indices(end));
-% end
-% 
-% % percent overshoot
-% x_max = max(x_hist(1, :));
-% percent_overshoot = ((x_max - x_final) / abs(x_final))*100;
+    % Euler integration
+    dx = A * x + B * u;
+    x = x + dx * dt;
+end
 
+
+%% Report
+% Performance Metrics
+e_pos_acker = x_hist_acker(1, :) - x_ref(1);
+IAE_acker = trapz(time, abs(e_pos_acker));
+ISE_acker = trapz(time, e_pos_acker.^2);
+ITAE_acker = trapz(time, time .* abs(e_pos_acker));
+
+e_pos_lqr = x_hist_lqr(1, :) - x_ref(1);
+IAE_lqr = trapz(time, abs(e_pos_lqr));
+ISE_lqr = trapz(time, e_pos_lqr.^2);
+ITAE_lqr = trapz(time, time .* abs(e_pos_lqr));
+
+% Display Results
 fprintf('Cost Analysis Results:\n');
-fprintf('IAE: %.5f\n', IAE);
-fprintf('ISE: %.5f\n', ISE);
-fprintf('ITAE: %.5f\n', ITAE);
-% fprintf('Settling Time: %.2f seconds\n', settling_time);
-% fprintf('Percent Overshoot: %.2f%%\n', percent_overshoot);
+fprintf('Acker - IAE: %.5f, ISE: %.5f, ITAE: %.5f\n', IAE_acker, ISE_acker, ITAE_acker);
+fprintf('LQR - IAE: %.5f, ISE: %.5f, ITAE: %.5f\n', IAE_lqr, ISE_lqr, ITAE_lqr);
 
-% visualize system simulation
+% Visualization
 figure;
+% State Responses
 subplot(2, 1, 1);
-plot(time, x_hist(1, :), 'r', 'LineWidth', 1.5); hold on;
-plot(time, x_hist(3, :), 'b', 'LineWidth', 1.5);
-legend('Ball Position (x)', 'Beam Angle (\theta)');
+plot(time, x_hist_acker(1, :), 'b', 'LineWidth', 1.5); hold on;
+plot(time, x_hist_acker(3, :), 'r', 'LineWidth', 1.5);
+plot(time, x_hist_lqr(1, :), '--b', 'LineWidth', 1.5);
+plot(time, x_hist_lqr(3, :), '--r', 'LineWidth', 1.5);
+legend('x - Acker', '\theta - Acker', 'x - LQR', '\theta - LQR');
 xlabel('Time (s)');
 ylabel('State Values');
-title('System States');
+title('State Response Comparison - Pole Placement vs. LQR');
 grid on;
 
-% figure;
+% Control Inputs
 subplot(2, 1, 2);
-plot(time, u_hist, 'k', 'LineWidth', 1.5);
+plot(time, u_hist_acker, 'b', 'LineWidth', 1.5); hold on;
+plot(time, u_hist_lqr, '--r', 'LineWidth', 1.5);
+legend('u - Acker', 'u - LQR');
 xlabel('Time (s)');
-ylabel('Control Input (u)');
-title('Control Input');
+ylabel('Control Input');
+title('Control Input Comparison - Pole Placement vs. LQR');
 grid on;
