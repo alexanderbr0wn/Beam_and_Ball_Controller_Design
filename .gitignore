@@ -69,7 +69,7 @@ desktop.ini
 *.nav
 
 # Output files
-*.pdf
+# *.pdf
 *.eps
 
 # Folder for temporary compilation files (e.g., TeX Live)
