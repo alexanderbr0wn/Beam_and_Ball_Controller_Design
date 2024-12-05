@@ -74,3 +74,9 @@ desktop.ini
 
 # Folder for temporary compilation files (e.g., TeX Live)
 _texlive/*
+
+# Misc. document creation files
+*.png
+*.mp4
+*.avi
+Figures/
