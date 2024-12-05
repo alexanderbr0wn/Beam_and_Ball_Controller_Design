@@ -79,6 +79,7 @@ R = 1;
 desired_poles = [-158, -2+3i, -2-3i, -3.5];
 K_acker = acker(A, B, desired_poles);
 K_lqr = lqr(A, B, Q, R);
+Ki = 1;
 
 %% Simulation
 % Simulation Parameters
