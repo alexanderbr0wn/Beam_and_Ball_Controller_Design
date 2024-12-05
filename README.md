@@ -95,17 +95,6 @@ cd Beam_and_Ball_Controller_Design
 
 ---
 
-## Documentation
-The repository includes detailed documentation:
-- **Presentation**: `documentation/presentation/`  
-  Contains slides .pdf and source .TeX for project presentation.
-- **References**: `documentation/references/`  
-  Contains research papers and tutorials used as references.
-- **Final Report**: `documentation/report/`  
-  Includes the final report .pdf and source .TeX.
-
----
-
 ## System Components
 
 ### Key Features of the Simulink Model
