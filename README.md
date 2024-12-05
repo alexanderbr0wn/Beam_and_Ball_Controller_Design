@@ -41,11 +41,11 @@ Here is the repository layout:
 
 ## Documentation
 The repository includes detailed documentation:
-- **Presentation**: [`documentation/presentation/`](./documentation/presentation/)  
+- **Presentation**: [`documentation/presentation/Final_Presentation.pdf`](./documentation/presentation/Final_Presentation.pdf)  
   Contains slides and associated figures.
 - **References**: [`documentation/references/`](./documentation/references/)  
   Includes research papers and tutorials.
-- **Final Report**: [`documentation/report/`](./documentation/report/)  
+- **Final Report**: [`documentation/report/Final_Report.pdf`](./documentation/report/Final_Report.pdf)  
   Includes the final report and source files.
 
 ---
