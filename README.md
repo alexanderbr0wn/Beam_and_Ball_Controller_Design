@@ -4,10 +4,10 @@
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Directory Structure](#directory-structure)
-3. [How to Use](#how-to-use)
+3. [Documentation](#documentation)
+4. [How to Use](#how-to-use)
    - [Cloning the Repository](#cloning-the-repository)
    - [Running the Simulation](#running-the-simulation)
-4. [Documentation](#documentation)
 5. [Performance Metrics](#performance-metrics)
 6. [Known Limitations](#known-limitations)
 7. [Future Work](#future-work)
